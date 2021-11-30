@@ -28,6 +28,7 @@ namespace Trick_tests
             initialSpeed = 35;
             startTime = 0;
             animationStartTime = 0;
+
             frame = 0;
         }
 
@@ -41,7 +42,7 @@ namespace Trick_tests
         {
             //animate
 
-            float elapsedAnimationTime = (float)gameTime.TotalGameTime.TotalMilliseconds - animationStartTime;
+            elapsedAnimationTime = (float)gameTime.TotalGameTime.TotalMilliseconds - animationStartTime;
 
             if (elapsedAnimationTime > 450 && jumping == false)
             {
@@ -50,8 +51,7 @@ namespace Trick_tests
                 else
                     frame = 1;
 
-                //if (keyboardState.IsKeyUp(Keys.Up) && keyboardState.IsKeyUp(Keys.Down))
-                    animationStartTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
+                animationStartTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
 
             }
 
@@ -60,10 +60,9 @@ namespace Trick_tests
             if (jumping == true)
             {
                 //jumping
-                float elapsedTime = (float)(gameTime.TotalGameTime.TotalMilliseconds - startTime) / 1000f;
+                elapsedTime = (float)(gameTime.TotalGameTime.TotalMilliseconds - startTime) / 1000f;
                 velocity = (initialSpeed - (40f * elapsedTime));
                 _skaterBounds.Y -= (int)(velocity * elapsedTime);
-                //_skaterBounds.Y -= (int)(velocity * elapsedTime);
 
                 if (velocity >= -velocity)
                 {
