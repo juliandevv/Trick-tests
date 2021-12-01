@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Trick_tests;
 
 namespace Trick_tests
 {
@@ -11,6 +12,7 @@ namespace Trick_tests
     {
         private List<Texture2D> _skaterTextures;
         private Rectangle _skaterBounds;
+        private Board _board;
 
         //jump
         private bool jumping;
@@ -20,14 +22,16 @@ namespace Trick_tests
         private float animationStartTime, elapsedAnimationTime;
         private int frame;
 
-        public Skater(List<Texture2D> textures, Rectangle rect)
+        public Skater(List<Texture2D> skaterTextures, Rectangle rect, List<Texture2D> boardTextures)
         {
-            _skaterTextures = textures;
+            _skaterTextures = skaterTextures;
             _skaterBounds = rect;
             jumping = false;
             initialSpeed = 35;
             startTime = 0;
             animationStartTime = 0;
+
+            _board = new Board(boardTextures, new Rectangle(_skaterBounds.X, _skaterBounds.Y, 112, 50));
 
             frame = 0;
         }
@@ -38,8 +42,12 @@ namespace Trick_tests
             set { _skaterBounds = value; }
         }
 
-        public void Update(GameTime gameTime, KeyboardState keyboardState)
+        public void Update(GameTime gameTime)
         {
+            _board.Update(this);
+
+            
+
             //animate
 
             elapsedAnimationTime = (float)gameTime.TotalGameTime.TotalMilliseconds - animationStartTime;
@@ -80,6 +88,8 @@ namespace Trick_tests
                     jumping = false;
                 }
             }
+
+
         }
 
         public void Jump(GameTime gameTime)
@@ -92,8 +102,27 @@ namespace Trick_tests
             }
         }
 
+        public void Trick(Game1.Trick trick, GameTime gameTime)
+        {
+            if (jumping == true && trick == Game1.Trick.FrontsideShuv)
+            {
+                _board.FrontsideShuv(gameTime);
+            }
+
+            if (jumping == true && trick == Game1.Trick.BacksideShuv)
+            {
+                _board.BacksideShuv(gameTime);
+            }
+
+            if (jumping == true && trick == Game1.Trick.None)
+            {
+               
+            }
+        }
+
         public void Draw(SpriteBatch _spriteBatch)
         {
+            _board.Draw(_spriteBatch);
             _spriteBatch.Draw(_skaterTextures[frame], _skaterBounds, Color.White);
         }
     }

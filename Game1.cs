@@ -11,8 +11,18 @@ namespace Trick_tests
         private SpriteBatch _spriteBatch;
 
         List<Texture2D> skaterTextures = new List<Texture2D>();
+        List<Texture2D> boardTextures = new List<Texture2D>();
         Skater skater;
         KeyboardState keyboardState;
+        
+        public enum Trick
+        {
+            None,
+            BacksideShuv,
+            FrontsideShuv
+        }
+
+        Trick trick;
 
         public Game1()
         {
@@ -27,7 +37,9 @@ namespace Trick_tests
 
             base.Initialize();
 
-            skater = new Skater(skaterTextures, new Rectangle(_graphics.PreferredBackBufferWidth / 4, 280, 141, 180));
+            skater = new Skater(skaterTextures, new Rectangle(_graphics.PreferredBackBufferWidth / 4, 280, 141, 180), boardTextures);
+
+            
         }
 
         protected override void LoadContent()
@@ -40,6 +52,12 @@ namespace Trick_tests
             skaterTextures.Add(Content.Load<Texture2D>("newskaterTexture2"));
             skaterTextures.Add(Content.Load<Texture2D>("newUp"));
             skaterTextures.Add(Content.Load<Texture2D>("newDown"));
+
+            boardTextures.Add(Content.Load<Texture2D>("Board Straight"));
+            boardTextures.Add(Content.Load<Texture2D>("Board Up"));
+            boardTextures.Add(Content.Load<Texture2D>("Board Perpendicular"));
+            boardTextures.Add(Content.Load<Texture2D>("Board Down"));
+
         }
 
         protected override void Update(GameTime gameTime)
@@ -56,7 +74,23 @@ namespace Trick_tests
                 skater.Jump(gameTime);
             }
 
-            skater.Update(gameTime, keyboardState);
+            else if (keyboardState.IsKeyDown(Keys.D))
+            {
+                trick = Trick.BacksideShuv;
+            }
+
+            else if (keyboardState.IsKeyDown(Keys.A))
+            {
+                trick = Trick.FrontsideShuv;
+            }
+
+            else
+            {
+                trick = Trick.None;
+            }
+
+            skater.Trick(trick, gameTime);
+            skater.Update(gameTime);
 
             base.Update(gameTime);
         }
