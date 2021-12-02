@@ -14,12 +14,17 @@ namespace Trick_tests
         List<Texture2D> boardTextures = new List<Texture2D>();
         Skater skater;
         KeyboardState keyboardState;
+        float jumpStartTime;
+        bool jumpKeyPressed;
         
         public enum Trick
         {
             None,
             BacksideShuv,
-            FrontsideShuv
+            FrontsideShuv,
+            Kickflip,
+            Heelflip
+
         }
 
         Trick trick;
@@ -38,6 +43,7 @@ namespace Trick_tests
             base.Initialize();
 
             skater = new Skater(skaterTextures, new Rectangle(_graphics.PreferredBackBufferWidth / 4, 280, 141, 180), boardTextures);
+            jumpKeyPressed = false;
 
             
         }
@@ -53,10 +59,13 @@ namespace Trick_tests
             skaterTextures.Add(Content.Load<Texture2D>("newUp"));
             skaterTextures.Add(Content.Load<Texture2D>("newDown"));
 
-            boardTextures.Add(Content.Load<Texture2D>("Board Straight"));
-            boardTextures.Add(Content.Load<Texture2D>("Board Up"));
-            boardTextures.Add(Content.Load<Texture2D>("Board Perpendicular"));
-            boardTextures.Add(Content.Load<Texture2D>("Board Down"));
+            boardTextures.Add(Content.Load<Texture2D>("Board Straight")); //-----[0]regular
+            boardTextures.Add(Content.Load<Texture2D>("Board Up")); //-----------[1]ollie, front shuv
+            boardTextures.Add(Content.Load<Texture2D>("Board Perpendicular")); //[2]back/front shuv
+            boardTextures.Add(Content.Load<Texture2D>("Board Down")); //---------[3]ollie, back shuv
+            boardTextures.Add(Content.Load<Texture2D>("Board Turn Up")); //------[4]kickflip
+            boardTextures.Add(Content.Load<Texture2D>("Board Upside Down")); //--[5]kick/heel flip
+            boardTextures.Add(Content.Load<Texture2D>("Board Turn Down")); //----[6]heelflip
 
         }
 
@@ -71,8 +80,18 @@ namespace Trick_tests
 
             if (keyboardState.IsKeyDown(Keys.S))
             {
-                skater.Jump(gameTime);
+                if (jumpKeyPressed == false)
+                {
+                    jumpStartTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
+                    jumpKeyPressed = true;
+                }
             }
+
+            if (keyboardState.IsKeyUp(Keys.S) && jumpKeyPressed == true)
+			{
+                skater.Jump(gameTime, jumpStartTime);
+                jumpKeyPressed = false;
+			}
 
             else if (keyboardState.IsKeyDown(Keys.D))
             {
@@ -82,6 +101,16 @@ namespace Trick_tests
             else if (keyboardState.IsKeyDown(Keys.A))
             {
                 trick = Trick.FrontsideShuv;
+            }
+
+            else if (keyboardState.IsKeyDown(Keys.W))
+            {
+                trick = Trick.Kickflip;
+            }
+
+            else if (keyboardState.IsKeyDown(Keys.X))
+            {
+                trick = Trick.Heelflip;
             }
 
             else

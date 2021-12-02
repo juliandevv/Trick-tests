@@ -32,12 +32,13 @@ namespace Trick_tests
             _boardBounds.Y = skater.Bounds.Bottom - _boardBounds.Height;
             _boardBounds.Width = _boardTextures[frame].Width;
             _boardBounds.Height = _boardTextures[frame].Height;
+
         }
         public void FrontsideShuv(GameTime gameTime)
         {
             elapsedAnimationTime = (float)gameTime.TotalGameTime.TotalMilliseconds - animationStartTime;
 
-            if (elapsedAnimationTime > 150)
+            if (elapsedAnimationTime > 180)
             {
                 if (frame < 3)
                     frame++;
@@ -57,12 +58,58 @@ namespace Trick_tests
 
             if (elapsedAnimationTime > 150)
             {
-                if (frame == 0)
+                if (frame == 0 || frame >= 4)
                     frame = 3;
 
-                else if (frame > 0)
+                else if (frame > 0 && frame < 4)
                 {
                     frame--;
+                }
+
+                animationStartTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
+            }
+        }
+
+        public void Kickflip(GameTime gameTime)
+        {
+            elapsedAnimationTime = (float)gameTime.TotalGameTime.TotalMilliseconds - animationStartTime;
+
+            if (elapsedAnimationTime > 150)
+            {
+                if (frame < 4)
+                    frame = 4;
+
+                else if (frame < 6)
+                {
+                    frame++;
+                }
+
+                else if (frame >= 6)
+				{
+                    frame = 0;
+				}
+
+                animationStartTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
+            }
+        }
+
+        public void Heelflip(GameTime gameTime)
+        {
+            elapsedAnimationTime = (float)gameTime.TotalGameTime.TotalMilliseconds - animationStartTime;
+
+            if (elapsedAnimationTime > 180)
+            {
+                if (frame < 4)
+                    frame = 6;
+
+                else if (frame > 4)
+                {
+                    frame--;
+                }
+
+                else if (frame <= 4)
+                {
+                    frame = 0;
                 }
 
                 animationStartTime = (float)gameTime.TotalGameTime.TotalMilliseconds;

@@ -27,7 +27,7 @@ namespace Trick_tests
             _skaterTextures = skaterTextures;
             _skaterBounds = rect;
             jumping = false;
-            initialSpeed = 35;
+            //initialSpeed = 35;
             startTime = 0;
             animationStartTime = 0;
 
@@ -82,7 +82,7 @@ namespace Trick_tests
                     frame = 3;
                 }
 
-                if (_skaterBounds.Y >= yBeforeJump && elapsedTime >= 0.5f)
+                if (_skaterBounds.Y >= yBeforeJump && elapsedTime >= 0.1f)
                 {
                     _skaterBounds.Y = (int)yBeforeJump;
                     jumping = false;
@@ -92,13 +92,19 @@ namespace Trick_tests
 
         }
 
-        public void Jump(GameTime gameTime)
+        public void Jump(GameTime gameTime, float jumpStartTime)
         {
             if (jumping == false)
             {
+                initialSpeed = (float)(gameTime.TotalGameTime.TotalMilliseconds - jumpStartTime) / 1000f * 55f;
                 yBeforeJump = _skaterBounds.Y;
                 startTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
                 jumping = true;
+
+                if (initialSpeed >= 40)
+				{
+                    initialSpeed = 40;
+				}
             }
         }
 
@@ -112,6 +118,16 @@ namespace Trick_tests
             if (jumping == true && trick == Game1.Trick.BacksideShuv)
             {
                 _board.BacksideShuv(gameTime);
+            }
+
+            if (jumping == true && trick == Game1.Trick.Kickflip)
+            {
+                _board.Kickflip(gameTime);
+            }
+
+            if (jumping == true && trick == Game1.Trick.Heelflip)
+            {
+                _board.Heelflip(gameTime);
             }
 
             if (jumping == true && trick == Game1.Trick.None)
