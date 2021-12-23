@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Trick_tests
 {
@@ -22,8 +23,13 @@ namespace Trick_tests
         //background
         List<BackgroundObject> backgroundObjects = new List<BackgroundObject>();
         List<Texture2D> backgroundTextures = new List<Texture2D>();
+        Texture2D street;
         Vector2 speedLevel1, speedLevel2, speedLevel3;
         Random generator;
+
+        //obstales
+        List<Obstacle> obstacles = new List<Obstacle>();
+        List<Texture2D> obstacleTextures = new List<Texture2D>();
 
 
         public enum Trick
@@ -71,10 +77,16 @@ namespace Trick_tests
             currentScreen = Screen.Title;
 
             //background
-            backgroundObjects.Add(new BackgroundObject(backgroundTextures[0], new Rectangle(200, 200, 60, 60), speedLevel1));
-            backgroundObjects.Add(new BackgroundObject(backgroundTextures[0], new Rectangle(400, 180, 40, 40), speedLevel2));
-            backgroundObjects.Add(new BackgroundObject(backgroundTextures[0], new Rectangle(600, 100, 30, 30), speedLevel3));
-            backgroundObjects.Add(new BackgroundObject(backgroundTextures[0], new Rectangle(600, 100, 30, 30), speedLevel3));
+            backgroundObjects.Add(new BackgroundObject(backgroundTextures[0], new Rectangle(200, 230, 60, 60), speedLevel1));
+            backgroundObjects.Add(new BackgroundObject(backgroundTextures[0], new Rectangle(400, 200, 40, 40), speedLevel2));
+            backgroundObjects.Add(new BackgroundObject(backgroundTextures[0], new Rectangle(600, 180, 30, 30), speedLevel3));
+            backgroundObjects.Add(new BackgroundObject(backgroundTextures[0], new Rectangle(900, 180, 30, 30), speedLevel3));
+
+            //sort list by speed
+            backgroundObjects = backgroundObjects.OrderByDescending(o => o.Speed.X).ToList();
+
+            //obstacles
+            obstacles.Add(new Obstacle(obstacleTextures[0], new Rectangle(950, 300, 180, 100), speedLevel1));
 
             //skater
             skater = new Skater(skaterTextures, new Rectangle(_graphics.PreferredBackBufferWidth / 4, 280, 141, 180), boardTextures);
@@ -86,9 +98,15 @@ namespace Trick_tests
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            //street
+            street = Content.Load<Texture2D>("ROAD 2 (bigger)");
+
             //background textures
             backgroundTextures.Add(Content.Load<Texture2D>("bush1"));
             backgroundTextures.Add(Content.Load<Texture2D>("tree"));
+
+            //obstacle textures
+            obstacleTextures.Add(Content.Load<Texture2D>("Kicker"));
 
             //skater textures
             skaterTextures.Add(Content.Load<Texture2D>("newskaterTexture1"));
@@ -141,11 +159,6 @@ namespace Trick_tests
             keyboardState = Keyboard.GetState();
 
             //background
-            //foreach (BackgroundObject backgroundObject in backgroundObjects)
-            //    backgroundObject.Move();
-
-
-            //background
             for (int i = 0; i < backgroundObjects.Count; i++)
             {
 
@@ -154,6 +167,18 @@ namespace Trick_tests
                 if (backgroundObjects[i].Bounds.X <= (0 - backgroundObjects[i].Bounds.Width))
                 {
                     backgroundObjects[i].Bounds = new Rectangle(generator.Next(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferWidth + 100), backgroundObjects[i].Bounds.Y, backgroundObjects[i].Bounds.Width, backgroundObjects[i].Bounds.Height);
+                }
+            }
+
+            //obstacles
+            for (int i = 0; i < obstacles.Count; i++)
+            {
+
+                obstacles[i].Move();
+
+                if (obstacles[i].Bounds.X <= (0 - obstacles[i].Bounds.Width))
+                {
+                    obstacles[i].Bounds = new Rectangle(generator.Next(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferWidth + 100), generator.Next(300, 400), obstacles[i].Bounds.Width, obstacles[i].Bounds.Height);
                 }
             }
 
@@ -230,11 +255,25 @@ namespace Trick_tests
         protected void DrawMainGame()
         {
             _spriteBatch.Begin();
+
+            //draw street
+            _spriteBatch.Draw(street, new Rectangle(0, 200, 1200, 400), Color.White);
+
+            //draw background
             for (int i = 0; i < backgroundObjects.Count; i++)
             {
                 backgroundObjects[i].Draw(_spriteBatch);
             }
+
+            //obstacles
+            foreach (Obstacle obstacle in obstacles)
+            {
+                obstacle.Draw(_spriteBatch);
+            }
+
+            //draw skater
             skater.Draw(_spriteBatch);
+
             _spriteBatch.End();
         }
 
