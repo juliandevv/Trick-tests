@@ -47,6 +47,24 @@ namespace Trick_tests
             _spriteBatch.Draw(this.Texture, this.Bounds, Color.White);
         }
 
+        public Skater.State CheckCollisions(Skater skater)
+        {
+            if (this.Bounds.Left <= skater.Bounds.Right && this.Bounds.Left >= skater.Bounds.Right - 110 && skater.Bounds.Bottom <= this.Bounds.Bottom && skater.Bounds.Bottom >= this.Bounds.Top)
+            {
+                return Skater.State.up;
+            }
+
+            if (this.Bounds.Right <= skater.Bounds.Left + 40 && this.Bounds.Right >= skater.Bounds.Left - 100 && skater.Bounds.Bottom <= this.Bounds.Bottom && skater.Bounds.Bottom >= this.Bounds.Top)
+            {
+                return Skater.State.falling;
+            }
+
+            else
+            {
+                return Skater.State.riding;
+            }
+        }
+
         public void Move()
         {
 

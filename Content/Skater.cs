@@ -11,8 +11,19 @@ namespace Trick_tests
     class Skater
     {
         private List<Texture2D> _skaterTextures;
+        private List<Obstacle> _obstacles;
         private Rectangle _skaterBounds;
         private Board _board;
+        public enum State
+        {
+            jumping,
+            riding,
+            up,
+            falling,
+            down
+        }
+
+        private State _currentState;
 
         //jump
         private bool jumping;
@@ -22,14 +33,15 @@ namespace Trick_tests
         private float animationStartTime, elapsedAnimationTime;
         private int frame;
 
-        public Skater(List<Texture2D> skaterTextures, Rectangle rect, List<Texture2D> boardTextures)
+        public Skater(List<Texture2D> skaterTextures, Rectangle rect, List<Texture2D> boardTextures, List<Obstacle> obstacles)
         {
             _skaterTextures = skaterTextures;
             _skaterBounds = rect;
             jumping = false;
-            //initialSpeed = 35;
             startTime = 0;
             animationStartTime = 0;
+            _currentState = State.riding;
+            _obstacles = obstacles;
 
             _board = new Board(boardTextures, new Rectangle(_skaterBounds.X, _skaterBounds.Y, 112, 50));
 
@@ -42,14 +54,12 @@ namespace Trick_tests
             set { _skaterBounds = value; }
         }
 
-        public void Update(GameTime gameTime)
+
+        public void Update(GameTime gameTime, State state)
         {
             _board.Update(this);
 
-            
-
             //animate
-
             elapsedAnimationTime = (float)gameTime.TotalGameTime.TotalMilliseconds - animationStartTime;
 
             if (elapsedAnimationTime > 450 && jumping == false)
@@ -60,12 +70,10 @@ namespace Trick_tests
                     frame = 1;
 
                 animationStartTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
-
             }
 
             //move
-
-            if (jumping == true)
+            if (_currentState == State.jumping)
             {
                 //jumping
                 elapsedTime = (float)(gameTime.TotalGameTime.TotalMilliseconds - startTime) / 1000f;
@@ -85,21 +93,54 @@ namespace Trick_tests
                 if (_skaterBounds.Y >= yBeforeJump && elapsedTime >= 0.1f)
                 {
                     _skaterBounds.Y = (int)yBeforeJump;
-                    jumping = false;
+                    _currentState = State.riding;
                 }
             }
 
+            if (state == State.up && _currentState == State.riding)
+            {
+                _skaterBounds.Y -= 2;
+                frame = 2;
+                _board.Up();
+            }
+
+            if (state == State.down && _currentState == State.riding)
+            {
+                _skaterBounds.Y += 2;
+                frame = 3;
+                _board.Down();
+            }
+
+            if (_currentState == State.riding && state != State.down && state != State.up)
+            {
+                _board.Straight();
+            }
+
+            foreach (Obstacle obstacle in _obstacles)
+            {
+                if (obstacle.CheckCollisions(this) == State.up)
+                {
+                    _skaterBounds.Y -= 1;
+                    frame = 1;
+                }
+
+                if (obstacle.CheckCollisions(this) == State.falling)
+                {
+                    _skaterBounds.Y += 2;
+                }
+            }
 
         }
 
         public void Jump(GameTime gameTime, float jumpStartTime)
         {
-            if (jumping == false)
+            if (_currentState == State.riding)
             {
                 initialSpeed = (float)(gameTime.TotalGameTime.TotalMilliseconds - jumpStartTime) / 1000f * 55f;
                 yBeforeJump = _skaterBounds.Y;
                 startTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
-                jumping = true;
+                _currentState = State.jumping;
+                //jumping = true;
 
                 if (initialSpeed >= 40)
 				{
@@ -110,27 +151,27 @@ namespace Trick_tests
 
         public void Trick(Game1.Trick trick, GameTime gameTime)
         {
-            if (jumping == true && trick == Game1.Trick.FrontsideShuv)
+            if (_currentState == State.jumping && trick == Game1.Trick.FrontsideShuv)
             {
                 _board.FrontsideShuv(gameTime);
             }
 
-            if (jumping == true && trick == Game1.Trick.BacksideShuv)
+            if (_currentState == State.jumping && trick == Game1.Trick.BacksideShuv)
             {
                 _board.BacksideShuv(gameTime);
             }
 
-            if (jumping == true && trick == Game1.Trick.Kickflip)
+            if (_currentState == State.jumping && trick == Game1.Trick.Kickflip)
             {
                 _board.Kickflip(gameTime);
             }
 
-            if (jumping == true && trick == Game1.Trick.Heelflip)
+            if (_currentState == State.jumping && trick == Game1.Trick.Heelflip)
             {
                 _board.Heelflip(gameTime);
             }
 
-            if (jumping == true && trick == Game1.Trick.None)
+            if (_currentState == State.jumping && trick == Game1.Trick.None)
             {
                
             }

@@ -89,7 +89,7 @@ namespace Trick_tests
             obstacles.Add(new Obstacle(obstacleTextures[0], new Rectangle(950, 300, 180, 100), speedLevel1));
 
             //skater
-            skater = new Skater(skaterTextures, new Rectangle(_graphics.PreferredBackBufferWidth / 4, 280, 141, 180), boardTextures);
+            skater = new Skater(skaterTextures, new Rectangle(_graphics.PreferredBackBufferWidth / 4, 280, 141, 180), boardTextures, obstacles);
             jumpKeyPressed = false;
 
         }
@@ -183,6 +183,8 @@ namespace Trick_tests
             }
 
             //skater
+            Skater.State state = Skater.State.riding;
+
             if (keyboardState.IsKeyDown(Keys.S))
             {
                 if (jumpKeyPressed == false)
@@ -196,6 +198,16 @@ namespace Trick_tests
             {
                 skater.Jump(gameTime, jumpStartTime);
                 jumpKeyPressed = false;
+            }
+
+            else if (keyboardState.IsKeyDown(Keys.Up))
+            {
+                state = Skater.State.up;
+            }
+
+            else if (keyboardState.IsKeyDown(Keys.Down))
+            {
+                state = Skater.State.down;
             }
 
             else if (keyboardState.IsKeyDown(Keys.D))
@@ -224,7 +236,7 @@ namespace Trick_tests
             }
 
             skater.Trick(trick, gameTime);
-            skater.Update(gameTime);
+            skater.Update(gameTime, state);
 
         }
 

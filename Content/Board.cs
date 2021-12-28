@@ -32,8 +32,23 @@ namespace Trick_tests
             _boardBounds.Y = skater.Bounds.Bottom - _boardBounds.Height;
             _boardBounds.Width = _boardTextures[frame].Width;
             _boardBounds.Height = _boardTextures[frame].Height;
-
         }
+
+        public void Up()
+        {
+            frame = 1;
+        }
+
+        public void Down()
+        {
+            frame = 3;
+        }
+
+        public void Straight()
+        {
+            frame = 0;
+        }
+
         public void FrontsideShuv(GameTime gameTime)
         {
             elapsedAnimationTime = (float)gameTime.TotalGameTime.TotalMilliseconds - animationStartTime;
