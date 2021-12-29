@@ -14,6 +14,7 @@ namespace Trick_tests
         private List<Obstacle> _obstacles;
         private Rectangle _skaterBounds;
         private Board _board;
+        private Score _score;
         public enum State
         {
             jumping,
@@ -24,24 +25,25 @@ namespace Trick_tests
         }
 
         private State _currentState;
+        private State _lastState;
 
         //jump
-        private bool jumping;
         private float velocity, elapsedTime, startTime, initialSpeed, yBeforeJump;
 
         //animation
         private float animationStartTime, elapsedAnimationTime;
         private int frame;
 
-        public Skater(List<Texture2D> skaterTextures, Rectangle rect, List<Texture2D> boardTextures, List<Obstacle> obstacles)
+        public Skater(List<Texture2D> skaterTextures, Rectangle rect, List<Texture2D> boardTextures, List<Obstacle> obstacles, Score score)
         {
             _skaterTextures = skaterTextures;
             _skaterBounds = rect;
-            jumping = false;
             startTime = 0;
             animationStartTime = 0;
             _currentState = State.riding;
+            _lastState = _currentState;
             _obstacles = obstacles;
+            _score = score;
 
             _board = new Board(boardTextures, new Rectangle(_skaterBounds.X, _skaterBounds.Y, 112, 50));
 
@@ -62,7 +64,7 @@ namespace Trick_tests
             //animate
             elapsedAnimationTime = (float)gameTime.TotalGameTime.TotalMilliseconds - animationStartTime;
 
-            if (elapsedAnimationTime > 450 && jumping == false)
+            if (elapsedAnimationTime > 450 && _currentState == State.riding)
             {
                 if (frame == 1)
                     frame = 0;
@@ -97,37 +99,34 @@ namespace Trick_tests
                 }
             }
 
-            if (state == State.up && _currentState == State.riding)
+            if (_currentState == State.up)
             {
                 _skaterBounds.Y -= 2;
-                frame = 2;
-                _board.Up();
             }
 
-            if (state == State.down && _currentState == State.riding)
+            if (_currentState == State.down)
             {
                 _skaterBounds.Y += 2;
-                frame = 3;
-                _board.Down();
-            }
-
-            if (_currentState == State.riding && state != State.down && state != State.up)
-            {
-                _board.Straight();
             }
 
             foreach (Obstacle obstacle in _obstacles)
             {
                 if (obstacle.CheckCollisions(this) == State.up)
                 {
+                    frame = 2;
                     _skaterBounds.Y -= 1;
-                    frame = 1;
                 }
 
                 if (obstacle.CheckCollisions(this) == State.falling)
                 {
-                    _skaterBounds.Y += 2;
+                    _skaterBounds.Y += 3;
                 }
+            }
+
+            //did the trick land
+            if (_board.Frame != 0 && _currentState == State.riding)
+            {
+                _score.Trick(6);
             }
 
         }
@@ -140,7 +139,6 @@ namespace Trick_tests
                 yBeforeJump = _skaterBounds.Y;
                 startTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
                 _currentState = State.jumping;
-                //jumping = true;
 
                 if (initialSpeed >= 40)
 				{
@@ -151,29 +149,54 @@ namespace Trick_tests
 
         public void Trick(Game1.Trick trick, GameTime gameTime)
         {
+            if (_currentState == State.jumping && trick == Game1.Trick.None)
+            {
+                _score.Trick(1);
+            }
+
             if (_currentState == State.jumping && trick == Game1.Trick.FrontsideShuv)
             {
                 _board.FrontsideShuv(gameTime);
+                _score.Trick(2);
             }
 
             if (_currentState == State.jumping && trick == Game1.Trick.BacksideShuv)
             {
                 _board.BacksideShuv(gameTime);
+                _score.Trick(3);
             }
 
             if (_currentState == State.jumping && trick == Game1.Trick.Kickflip)
             {
                 _board.Kickflip(gameTime);
+                _score.Trick(4);
             }
 
             if (_currentState == State.jumping && trick == Game1.Trick.Heelflip)
             {
                 _board.Heelflip(gameTime);
+                _score.Trick(5);
             }
 
-            if (_currentState == State.jumping && trick == Game1.Trick.None)
+            if (_currentState != State.jumping && trick == Game1.Trick.Up)
             {
-               
+                frame = 2;
+                _board.Up();
+                _currentState = State.up;
+            }
+
+            if (_currentState != State.jumping && trick == Game1.Trick.Down)
+            {
+                frame = 3;
+                _board.Down();
+                _currentState = State.down;
+            }
+
+            if (_currentState != State.jumping && trick == Game1.Trick.None)
+            {
+                _board.Straight();
+                _score.Trick(0);
+                _currentState = State.riding;
             }
         }
 

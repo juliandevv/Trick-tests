@@ -11,13 +11,20 @@ namespace Trick_tests
         private List<Texture2D> _boardTextures = new List<Texture2D>();
         private Rectangle _boardBounds;
         private float animationStartTime, elapsedAnimationTime;
-        int frame;
+        int frame, lastFrame;
+        bool revert;
 
         public Board(List<Texture2D> textures, Rectangle rect)
         {
             _boardTextures = textures;
             _boardBounds = rect;
             frame = 0;
+            revert = false;
+        }
+
+        public int Frame
+        {
+            get { return frame; }
         }
 
         public Rectangle Bounds
@@ -32,21 +39,28 @@ namespace Trick_tests
             _boardBounds.Y = skater.Bounds.Bottom - _boardBounds.Height;
             _boardBounds.Width = _boardTextures[frame].Width;
             _boardBounds.Height = _boardTextures[frame].Height;
+            lastFrame = frame;
         }
 
         public void Up()
         {
             frame = 1;
+            revert = true;
         }
 
         public void Down()
         {
             frame = 3;
+            revert = true;
         }
 
         public void Straight()
         {
-            frame = 0;
+            if (frame == 1 || frame == 3 && revert == true)
+            {
+                frame = 0;
+                revert = false;
+            }
         }
 
         public void FrontsideShuv(GameTime gameTime)

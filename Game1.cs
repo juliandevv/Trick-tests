@@ -12,13 +12,21 @@ namespace Trick_tests
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        //titlescreen
+        SpriteFont titleFont;
+        Vector2 titleSize;
+        string titleText;
+
         //skater
         List<Texture2D> skaterTextures = new List<Texture2D>();
         List<Texture2D> boardTextures = new List<Texture2D>();
+        List<string> tricks = new List<string>();
         Skater skater;
         KeyboardState keyboardState;
         float jumpStartTime;
         bool jumpKeyPressed;
+        Score score;
+        SpriteFont scoreFont;
 
         //background
         List<BackgroundObject> backgroundObjects = new List<BackgroundObject>();
@@ -26,6 +34,7 @@ namespace Trick_tests
         Texture2D street;
         Vector2 speedLevel1, speedLevel2, speedLevel3;
         Random generator;
+        float speedMultiplier;
 
         //obstales
         List<Obstacle> obstacles = new List<Obstacle>();
@@ -35,6 +44,8 @@ namespace Trick_tests
         public enum Trick
         {
             None,
+            Up,
+            Down,
             BacksideShuv,
             FrontsideShuv,
             Kickflip,
@@ -60,14 +71,24 @@ namespace Trick_tests
 
         protected override void Initialize()
         {
-
+            //window size
             _graphics.PreferredBackBufferWidth = 1200;
             _graphics.PreferredBackBufferHeight = 600;
             _graphics.ApplyChanges();
 
-            speedLevel1 = new Vector2(-2f, 0);
-            speedLevel2 = new Vector2(-1f, 0);
-            speedLevel3 = new Vector2(-0.5f, 0);
+            speedMultiplier = 3;
+            speedLevel1 = new Vector2(-2f * speedMultiplier, 0);
+            speedLevel2 = new Vector2(-1f * speedMultiplier, 0);
+            speedLevel3 = new Vector2(-0.5f * speedMultiplier, 0);
+
+            //tricks for score
+            tricks.Add("");
+            tricks.Add("Ollie");
+            tricks.Add("Frontside Shuv");
+            tricks.Add("Backside Shuv");
+            tricks.Add("Kickflip");
+            tricks.Add("Heelflip");
+            tricks.Add("Failed");
 
             generator = new Random();
 
@@ -75,6 +96,9 @@ namespace Trick_tests
 
             //initial screen
             currentScreen = Screen.Title;
+
+            //titlescreen
+            titleSize = titleFont.MeasureString("SKATE");
 
             //background
             backgroundObjects.Add(new BackgroundObject(backgroundTextures[0], new Rectangle(200, 230, 60, 60), speedLevel1));
@@ -89,7 +113,8 @@ namespace Trick_tests
             obstacles.Add(new Obstacle(obstacleTextures[0], new Rectangle(950, 300, 180, 100), speedLevel1));
 
             //skater
-            skater = new Skater(skaterTextures, new Rectangle(_graphics.PreferredBackBufferWidth / 4, 280, 141, 180), boardTextures, obstacles);
+            score = new Score(scoreFont, tricks);
+            skater = new Skater(skaterTextures, new Rectangle(_graphics.PreferredBackBufferWidth / 4, 280, 141, 180), boardTextures, obstacles, score);
             jumpKeyPressed = false;
 
         }
@@ -97,6 +122,12 @@ namespace Trick_tests
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            //score
+            scoreFont = Content.Load<SpriteFont>("Trick");
+
+            //title
+            titleFont = Content.Load<SpriteFont>("TitleFont");
 
             //street
             street = Content.Load<Texture2D>("ROAD 2 (bigger)");
@@ -202,12 +233,12 @@ namespace Trick_tests
 
             else if (keyboardState.IsKeyDown(Keys.Up))
             {
-                state = Skater.State.up;
+                trick = Trick.Up;
             }
 
             else if (keyboardState.IsKeyDown(Keys.Down))
             {
-                state = Skater.State.down;
+                trick = Trick.Down;
             }
 
             else if (keyboardState.IsKeyDown(Keys.D))
@@ -237,7 +268,6 @@ namespace Trick_tests
 
             skater.Trick(trick, gameTime);
             skater.Update(gameTime, state);
-
         }
 
         protected override void Draw(GameTime gameTime)
@@ -261,7 +291,10 @@ namespace Trick_tests
 
         protected void DrawTitle()
         {
-
+            _spriteBatch.Begin();
+            _spriteBatch.DrawString(titleFont, "Kick, Push", new Vector2(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 5), Color.Black, 0f, new Vector2(titleSize.X / 2, titleSize.Y / 2), 1f, SpriteEffects.None, 0f);
+            _spriteBatch.Draw(street, new Rectangle(0, 200, 1200, 400), Color.White);
+            _spriteBatch.End();
         }
 
         protected void DrawMainGame()
@@ -285,6 +318,7 @@ namespace Trick_tests
 
             //draw skater
             skater.Draw(_spriteBatch);
+            score.Draw(_spriteBatch);
 
             _spriteBatch.End();
         }

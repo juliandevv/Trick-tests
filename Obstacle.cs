@@ -54,7 +54,7 @@ namespace Trick_tests
                 return Skater.State.up;
             }
 
-            if (this.Bounds.Right <= skater.Bounds.Left + 40 && this.Bounds.Right >= skater.Bounds.Left - 100 && skater.Bounds.Bottom <= this.Bounds.Bottom && skater.Bounds.Bottom >= this.Bounds.Top)
+            if (this.Bounds.Right <= skater.Bounds.Left + 20 && this.Bounds.Right >= skater.Bounds.Left - 100 && skater.Bounds.Bottom <= this.Bounds.Bottom && skater.Bounds.Bottom >= this.Bounds.Top)
             {
                 return Skater.State.falling;
             }

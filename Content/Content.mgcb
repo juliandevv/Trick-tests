@@ -109,6 +109,13 @@
 /processorParam:TextureFormat=Color
 /build:bush1.png
 
+#begin File.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:File.spritefont;TitleFont.spritefont
+
 #begin Kicker.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -192,4 +199,11 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:tree.png
+
+#begin Trick.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Trick.spritefont
 
