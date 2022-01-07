@@ -65,10 +65,10 @@ namespace Trick_tests
             }
         }
 
-        public void Move()
+        public void Move(float speedMultiplier)
         {
 
-            _location.X += _speed.X;
+            _location.X += _speed.X * speedMultiplier;
             _rectangle.Location = new Point(_location.ToPoint().X, _location.ToPoint().Y);
 
         }

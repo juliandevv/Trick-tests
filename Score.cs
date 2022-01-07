@@ -11,6 +11,9 @@ namespace Trick_tests
     {
         private List<string> _tricks = new List<string>();
         private int _trickIndex;
+        private double _score;
+        private double _highScore;
+        private double _lastScore;
         private SpriteFont _scoreFont;
         private bool i;
         public Score(SpriteFont font, List<string> tricks)
@@ -18,17 +21,37 @@ namespace Trick_tests
             _tricks = tricks;
             _scoreFont = font;
             _trickIndex = 0;
+            _score = 0;
+            _highScore = 0;
             i = false;
         }
 
         public void Trick(int trickIndex)
         {
             _trickIndex = trickIndex;
+
+            _lastScore = trickIndex;
+            _score = (_score) + (_lastScore / 10);
+
+            if (trickIndex == 6)
+            {
+                _score = 0;
+            }
+        }
+
+        public void HighScore()
+        {
+            if (_score > _highScore)
+            {
+                _highScore = _score;
+            }
         }
 
         public void Draw(SpriteBatch _spriteBatch)
         {
-            _spriteBatch.DrawString(_scoreFont, _tricks[_trickIndex], new Vector2(100, 100), Color.White);
+            _spriteBatch.DrawString(_scoreFont, _tricks[_trickIndex], new Vector2(50, 50), Color.White);
+            _spriteBatch.DrawString(_scoreFont, "score: " + Math.Round(_score).ToString(), new Vector2(50, 80), Color.White);
+            _spriteBatch.DrawString(_scoreFont, "highscore: " + Math.Round(_highScore).ToString(), new Vector2(50, 110), Color.White);
         }
     }
 }

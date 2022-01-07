@@ -24,7 +24,9 @@ namespace Trick_tests
         Skater skater;
         KeyboardState keyboardState;
         float jumpStartTime;
+        float pushTime;
         bool jumpKeyPressed;
+        bool pushKeyPressed;
         Score score;
         SpriteFont scoreFont;
 
@@ -77,15 +79,15 @@ namespace Trick_tests
             _graphics.ApplyChanges();
 
             speedMultiplier = 3;
-            speedLevel1 = new Vector2(-2f * speedMultiplier, 0);
-            speedLevel2 = new Vector2(-1f * speedMultiplier, 0);
-            speedLevel3 = new Vector2(-0.5f * speedMultiplier, 0);
+            speedLevel1 = new Vector2(-2f, 0);
+            speedLevel2 = new Vector2(-1f, 0);
+            speedLevel3 = new Vector2(-0.5f, 0);
 
             //tricks for score
             tricks.Add("");
             tricks.Add("Ollie");
-            tricks.Add("Frontside Shuv");
             tricks.Add("Backside Shuv");
+            tricks.Add("Frontside Shuv");
             tricks.Add("Kickflip");
             tricks.Add("Heelflip");
             tricks.Add("Failed");
@@ -116,6 +118,7 @@ namespace Trick_tests
             score = new Score(scoreFont, tricks);
             skater = new Skater(skaterTextures, new Rectangle(_graphics.PreferredBackBufferWidth / 4, 280, 141, 180), boardTextures, obstacles, score);
             jumpKeyPressed = false;
+            pushKeyPressed = false;
 
         }
 
@@ -193,7 +196,7 @@ namespace Trick_tests
             for (int i = 0; i < backgroundObjects.Count; i++)
             {
 
-                backgroundObjects[i].Move();
+                backgroundObjects[i].Move(speedMultiplier);
 
                 if (backgroundObjects[i].Bounds.X <= (0 - backgroundObjects[i].Bounds.Width))
                 {
@@ -205,7 +208,7 @@ namespace Trick_tests
             for (int i = 0; i < obstacles.Count; i++)
             {
 
-                obstacles[i].Move();
+                obstacles[i].Move(speedMultiplier);
 
                 if (obstacles[i].Bounds.X <= (0 - obstacles[i].Bounds.Width))
                 {
@@ -215,6 +218,30 @@ namespace Trick_tests
 
             //skater
             Skater.State state = Skater.State.riding;
+
+            if (keyboardState.IsKeyDown(Keys.Space))
+            {
+                pushKeyPressed = true;
+                pushTime = (float)gameTime.TotalGameTime.TotalSeconds;
+            }
+
+            if (keyboardState.IsKeyUp(Keys.Space) && pushKeyPressed == true)
+            {
+                speedMultiplier += 0.5f;
+                pushKeyPressed = false;
+            }
+
+            speedMultiplier -= ((float)gameTime.TotalGameTime.TotalSeconds - pushTime) / 3000;
+
+            if (speedMultiplier >= 4)
+            {
+                speedMultiplier = 4;
+            }
+
+            if (speedMultiplier < 2)
+            {
+                speedMultiplier = 2;
+            }
 
             if (keyboardState.IsKeyDown(Keys.S))
             {

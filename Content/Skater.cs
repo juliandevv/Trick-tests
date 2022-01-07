@@ -126,6 +126,7 @@ namespace Trick_tests
             //did the trick land
             if (_board.Frame != 0 && _currentState == State.riding)
             {
+                _score.HighScore();
                 _score.Trick(6);
             }
 
