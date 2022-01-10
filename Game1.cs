@@ -15,6 +15,8 @@ namespace Trick_tests
         //titlescreen
         SpriteFont titleFont;
         Vector2 titleSize;
+        Button startButton;
+        MouseState mouseState;
         string titleText;
 
         //skater
@@ -58,7 +60,8 @@ namespace Trick_tests
         public enum Screen
         {
             Title,
-            MainGame
+            MainGame,
+            Crash
         }
 
         Trick trick;
@@ -100,7 +103,8 @@ namespace Trick_tests
             currentScreen = Screen.Title;
 
             //titlescreen
-            titleSize = titleFont.MeasureString("SKATE");
+            titleSize = titleFont.MeasureString("Kick, Push");
+            startButton = new Button(obstacleTextures[0], new Rectangle(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 50, 50));
 
             //background
             backgroundObjects.Add(new BackgroundObject(backgroundTextures[0], new Rectangle(200, 230, 60, 60), speedLevel1));
@@ -165,8 +169,19 @@ namespace Trick_tests
                 Exit();
 
             //check screen change
-            if (Keyboard.GetState().IsKeyDown(Keys.Enter))
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter) && currentScreen == Screen.Title)
                 currentScreen = Screen.MainGame;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter) && currentScreen == Screen.Crash)
+            {
+                currentScreen = Screen.MainGame;
+                skater.Reset();
+            }
+
+            if (skater.CrashState == true)
+            {
+                currentScreen = Screen.Crash;
+            }
 
             //title update logic
             if (currentScreen == Screen.Title)
@@ -180,12 +195,26 @@ namespace Trick_tests
                 MainGame(gameTime);
             }
 
+            //crash screen update logic
+            if (currentScreen == Screen.Crash)
+            {
+                Crash(gameTime);
+            }
+
             base.Update(gameTime);
         }
 
         protected void Title()
         {
+            mouseState = Mouse.GetState();
 
+            if (startButton.EnterButton(mouseState))
+            {
+                if (mouseState.LeftButton == ButtonState.Pressed)
+                {
+                    currentScreen = Screen.MainGame;
+                }
+            }
         }
 
         protected void MainGame(GameTime gameTime)
@@ -297,6 +326,11 @@ namespace Trick_tests
             skater.Update(gameTime, state);
         }
 
+        protected void Crash(GameTime gameTime)
+        {
+            skater.Crash();
+        }
+
         protected override void Draw(GameTime gameTime)
         {
             //draw title elements
@@ -313,6 +347,13 @@ namespace Trick_tests
                 DrawMainGame();
             }
 
+            //draw crash animation
+            if (currentScreen == Screen.Crash)
+            {
+                GraphicsDevice.Clear(Color.CornflowerBlue);
+                DrawCrash();
+            }
+
             base.Draw(gameTime);
         }
 
@@ -321,6 +362,7 @@ namespace Trick_tests
             _spriteBatch.Begin();
             _spriteBatch.DrawString(titleFont, "Kick, Push", new Vector2(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 5), Color.Black, 0f, new Vector2(titleSize.X / 2, titleSize.Y / 2), 1f, SpriteEffects.None, 0f);
             _spriteBatch.Draw(street, new Rectangle(0, 200, 1200, 400), Color.White);
+            startButton.Draw(_spriteBatch, Color.White);
             _spriteBatch.End();
         }
 
@@ -348,6 +390,36 @@ namespace Trick_tests
             score.Draw(_spriteBatch);
 
             _spriteBatch.End();
+        }
+
+        public void DrawCrash()
+        {
+            _spriteBatch.Begin();
+
+            //draw street
+            _spriteBatch.Draw(street, new Rectangle(0, 200, 1200, 400), Color.White);
+
+            //draw background
+            for (int i = 0; i < backgroundObjects.Count; i++)
+            {
+                backgroundObjects[i].Draw(_spriteBatch);
+            }
+
+            //obstacles
+            foreach (Obstacle obstacle in obstacles)
+            {
+                obstacle.Draw(_spriteBatch);
+            }
+
+            //draw skater
+            skater.Draw(_spriteBatch);
+            score.Draw(_spriteBatch);
+
+            //draw text
+            _spriteBatch.DrawString(titleFont, "Press enter to restart", new Vector2(100, 80), Color.White);
+
+            _spriteBatch.End();
+
         }
 
     }

@@ -42,6 +42,10 @@ namespace Trick_tests
             lastFrame = frame;
         }
 
+        public void Reset()
+        {
+            frame = 0;
+        }
         public void Up()
         {
             frame = 1;

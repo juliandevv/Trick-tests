@@ -15,6 +15,7 @@ namespace Trick_tests
         private Rectangle _skaterBounds;
         private Board _board;
         private Score _score;
+        private bool _crash;
         public enum State
         {
             jumping,
@@ -44,6 +45,7 @@ namespace Trick_tests
             _lastState = _currentState;
             _obstacles = obstacles;
             _score = score;
+            _crash = false;
 
             _board = new Board(boardTextures, new Rectangle(_skaterBounds.X, _skaterBounds.Y, 112, 50));
 
@@ -54,6 +56,11 @@ namespace Trick_tests
         {
             get { return _skaterBounds; }
             set { _skaterBounds = value; }
+        }
+
+        public bool CrashState
+        {
+            get { return _crash; }
         }
 
 
@@ -124,10 +131,16 @@ namespace Trick_tests
             }
 
             //did the trick land
-            if (_board.Frame != 0 && _currentState == State.riding)
+            if (_board.Frame != 0 && _currentState == State.riding && _crash == false)
             {
                 _score.HighScore();
                 _score.Trick(6);
+                _crash = true;
+            }
+
+            else
+            {
+                _crash = false;
             }
 
         }
@@ -199,6 +212,18 @@ namespace Trick_tests
                 _score.Trick(0);
                 _currentState = State.riding;
             }
+        }
+
+        public void Crash()
+        {
+            frame = 3;
+        }
+
+        public void Reset()
+        {
+            frame = 0;
+            _crash = false;
+            _board.Reset();
         }
 
         public void Draw(SpriteBatch _spriteBatch)
