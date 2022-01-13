@@ -228,6 +228,11 @@ namespace Trick_tests
 
         public void Draw(SpriteBatch _spriteBatch)
         {
+            //if (_currentState == State.riding)
+            //{
+            //}
+
+            _score.Draw(_spriteBatch);
             _board.Draw(_spriteBatch);
             _spriteBatch.Draw(_skaterTextures[frame], _skaterBounds, Color.White);
         }

@@ -50,8 +50,8 @@ namespace Trick_tests
         public void Draw(SpriteBatch _spriteBatch)
         {
             _spriteBatch.DrawString(_scoreFont, _tricks[_trickIndex], new Vector2(50, 50), Color.White);
-            _spriteBatch.DrawString(_scoreFont, "score: " + Math.Round(_score).ToString(), new Vector2(50, 80), Color.White);
-            _spriteBatch.DrawString(_scoreFont, "highscore: " + Math.Round(_highScore).ToString(), new Vector2(50, 110), Color.White);
+            _spriteBatch.DrawString(_scoreFont, "score: " + Math.Round(_score).ToString(), new Vector2(50, 90), Color.White);
+            _spriteBatch.DrawString(_scoreFont, "highscore: " + Math.Round(_highScore).ToString(), new Vector2(50, 130), Color.White);
         }
     }
 }

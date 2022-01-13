@@ -17,6 +17,7 @@ namespace Trick_tests
         Vector2 titleSize;
         Button startButton;
         MouseState mouseState;
+        Texture2D playButtonTexture;
         string titleText;
 
         //skater
@@ -104,7 +105,7 @@ namespace Trick_tests
 
             //titlescreen
             titleSize = titleFont.MeasureString("Kick, Push");
-            startButton = new Button(obstacleTextures[0], new Rectangle(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 50, 50));
+            startButton = new Button(playButtonTexture, new Rectangle(_graphics.PreferredBackBufferWidth / 2 - 100, _graphics.PreferredBackBufferHeight / 2, 200, 200));
 
             //background
             backgroundObjects.Add(new BackgroundObject(backgroundTextures[0], new Rectangle(200, 230, 60, 60), speedLevel1));
@@ -131,10 +132,11 @@ namespace Trick_tests
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             //score
-            scoreFont = Content.Load<SpriteFont>("Trick");
+            scoreFont = Content.Load<SpriteFont>("Score");
 
             //title
-            titleFont = Content.Load<SpriteFont>("TitleFont");
+            titleFont = Content.Load<SpriteFont>("Title");
+            playButtonTexture = Content.Load<Texture2D>("playbutton");
 
             //street
             street = Content.Load<Texture2D>("ROAD 2 (bigger)");
@@ -360,7 +362,7 @@ namespace Trick_tests
         protected void DrawTitle()
         {
             _spriteBatch.Begin();
-            _spriteBatch.DrawString(titleFont, "Kick, Push", new Vector2(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 5), Color.Black, 0f, new Vector2(titleSize.X / 2, titleSize.Y / 2), 1f, SpriteEffects.None, 0f);
+            _spriteBatch.DrawString(titleFont, "Kick, Push", new Vector2(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 5), Color.White, 0f, new Vector2(titleSize.X / 2, titleSize.Y / 2), 1f, SpriteEffects.None, 0f);
             _spriteBatch.Draw(street, new Rectangle(0, 200, 1200, 400), Color.White);
             startButton.Draw(_spriteBatch, Color.White);
             _spriteBatch.End();
@@ -413,10 +415,10 @@ namespace Trick_tests
 
             //draw skater
             skater.Draw(_spriteBatch);
-            score.Draw(_spriteBatch);
 
             //draw text
-            _spriteBatch.DrawString(titleFont, "Press enter to restart", new Vector2(100, 80), Color.White);
+            //_spriteBatch.DrawString(scoreFont, "Press enter to restart", new Vector2(200, 80), Color.White);
+            _spriteBatch.DrawString(scoreFont, "Press enter to restart", new Vector2(600, 300), Color.White, 0f, new Vector2(scoreFont.MeasureString("Press enter to restart").X / 2, scoreFont.MeasureString("Press enter to restart").Y / 2), 1f, SpriteEffects.None, 0f);
 
             _spriteBatch.End();
 
