@@ -105,7 +105,7 @@ namespace Trick_tests
 
             //titlescreen
             titleSize = titleFont.MeasureString("Kick, Push");
-            startButton = new Button(playButtonTexture, new Rectangle(_graphics.PreferredBackBufferWidth / 2 - 100, _graphics.PreferredBackBufferHeight / 2, 200, 200));
+            startButton = new Button(playButtonTexture, new Rectangle(_graphics.PreferredBackBufferWidth / 2 - 100, _graphics.PreferredBackBufferHeight / 2 - 50, 200, 200));
 
             //background
             backgroundObjects.Add(new BackgroundObject(backgroundTextures[0], new Rectangle(200, 230, 60, 60), speedLevel1));
@@ -136,7 +136,7 @@ namespace Trick_tests
 
             //title
             titleFont = Content.Load<SpriteFont>("Title");
-            playButtonTexture = Content.Load<Texture2D>("playbutton");
+            playButtonTexture = Content.Load<Texture2D>("playbutton1");
 
             //street
             street = Content.Load<Texture2D>("ROAD 2 (bigger)");
